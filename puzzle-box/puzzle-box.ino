@@ -25,6 +25,8 @@
 #include <Wire.h>
 #include "rgb_lcd.h"
 #include "hp_game.h"
+#include <Servo.h>
+Servo servoMain; // Define our Servo
 
 rgb_lcd lcd;
 hp_game game;
@@ -49,6 +51,8 @@ float temperature;
 int B = 3975;                         //  B Value of the Thermistor
 float resistance;
 
+int servoAngle = 0;
+
 void setup() 
 {
     Serial.begin(9600);                         // set the serial communication frequency at 9600 bits per sec
@@ -62,6 +66,9 @@ void setup()
     // set up the LCD's number of columns and rows:
     lcd.begin(16, 2);
     game.begin();
+
+    servoMain.attach(7);
+    servoMain.write(0);
 
     delay(1000);
 }
@@ -115,6 +122,8 @@ void loop()
       lcd.setCursor(0, 1);
       lcd.print(game.getState());
       delay(9000);
+      servoMain.write(180);
+      delay(1000);
     } else {
       lcd.print("Try Harder!");
       lcd.setCursor(0, 1);
