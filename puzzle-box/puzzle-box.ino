@@ -75,26 +75,52 @@ if(soundSensor>soundThreshold)
 void loop()
 {
     lcd.clear();
-    if(digitalRead(pinButton)) {
+    
+    // Button
+    if (digitalRead(pinButton)) {
       game.clickButton();
-      delay(1000);
     }
-    int value = analogRead(potentiometer);
-    game.updatePotentiometer(value);
-    lcd.print(game.getState());
+
+    // Temperature
+    int tempSensor = analogRead(pinTemp);
+    resistance=(float)(1023-tempSensor)*10000/tempSensor;    // get resistance
+    temperature=1/(log(resistance/10000)/B+1/298.15)-273.15; 
+    if (temperature>tempThreshold) {
+      game.hitTemperature();
+    }
+
+    //Sound
+    if (analogRead(pinSound) > soundThreshold) {
+      game.hitSound();
+    }
+
+    // Light
+    if (analogRead(pinLight) > lightThreshold) {
+      game.hitLight();
+    }
+
+    // Touch & Button
+    if (digitalRead(pinTouch) && digitalRead(pinButton)) {
+      game.hitDoublePress();
+    }
+
+    // Potentiometer
+    game.updatePotentiometer(analogRead(potentiometer));
     struct Color gcolor = game.getColor();
     lcd.setRGB(gcolor.r, gcolor.g, gcolor.b);
-    delay(500);
 
-    //Temperature Sensor
-    int tempSensor = analogRead(pinTemp);
-    resistance=(float)(1023-tempSensor)*10000/tempSensor;                      // get resistance
-    temperature=1/(log(resistance/10000)/B+1/298.15)-273.15;     // calc temperature
-    if(temperature>tempThreshold)
-    {
-      
+    // Victory?
+    if (game.isWinner()) {
+      lcd.print("Victory!");
+      lcd.setCursor(0, 1);
+      lcd.print(game.getState());
+      delay(9000);
+    } else {
+      lcd.print("Try Harder!");
+      lcd.setCursor(0, 1);
+      lcd.print(game.getState());
+      delay(500);
     }
-    
 }
 
 /*********************************************************************************************************

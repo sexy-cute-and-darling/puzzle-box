@@ -21,9 +21,14 @@
     RAVENCLAW Color
     SLYTHERIN Color
 
+    hitSound
+    hitLight
+    hitDoublePress
+    hitTemperature
+
 */
 #define BEGIN_GAME  0x000000
-#define WIN_GAME    0x000004
+#define WIN_GAME    0x0000ff
 
 
 // colors
@@ -44,7 +49,9 @@ public:
 
     void begin();
 
-    bool isWinner();
+    bool isWinner() {
+        return _challenges == WIN_GAME;
+    }
     uint32_t getState() {
         return _challenges;
     }
@@ -56,6 +63,12 @@ public:
     void clickButton() {
         matchesHouse();
     }
+
+    // Hits
+    void hitSound() { _challenges = _challenges | 0x000010; }
+    void hitLight() { _challenges = _challenges | 0x000020; }
+    void hitDoublePress() { _challenges = _challenges | 0x000040; }
+    void hitTemperature() { _challenges = _challenges | 0x000080; }
 
 private:
     void matchesHouse();
