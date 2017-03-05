@@ -54,14 +54,10 @@ public:
 
     void updatePotentiometer(uint32_t);
     void clickButton() {
-        incColorType();
+        matchesHouse();
     }
 
 private:
-    void incColorType() {
-        _colorType = (_colorType+1) % 3;
-    }
-
     void matchesHouse();
 
     struct Color _color;

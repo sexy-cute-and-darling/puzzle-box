@@ -71,7 +71,7 @@ if(soundSensor>soundThreshold)
 void loop()
 {
     lcd.clear();
-    if(digitalRead(pinTouch)) {
+    if(digitalRead(pinButton)) {
       game.clickButton();
       delay(1000);
     }
