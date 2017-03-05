@@ -24,45 +24,41 @@
 
 #include <Wire.h>
 #include "rgb_lcd.h"
+#include "hp_game.h"
 
 rgb_lcd lcd;
+hp_game game;
 
-const int colorR = 125;
-const int colorG = 0;
-const int colorB = 130;
-
-const int potentiometer = A0;                    // rotary angle sensor connect to A0
+const int pinTouch = 3;               // pin of Touch Sensor
+const int potentiometer = A1;
 
 void setup() 
 {
-    // Serial.begin(9600);                         // set the serial communication frequency at 9600 bits per sec
+    Serial.begin(9600);                         // set the serial communication frequency at 9600 bits per sec
     pinMode(potentiometer, INPUT);
+    pinMode(pinTouch, INPUT);
     
     // set up the LCD's number of columns and rows:
     lcd.begin(16, 2);
-    
-    lcd.setRGB(colorR, colorG, colorB);
+    game.begin();
+    // lcd.setRGB(colorR, colorG, colorB);
 
     delay(1000);
 }
 
-void loop() 
+void loop()
 {
-    int color = 0;
-    for (int i=0; i<10; i++){
-      lcd.clear();
-      // Print a message to the LCD.
-      lcd.print("hello, world!");
-      // set the cursor to column 0, line 1
-      // (note: line 1 is the second row, since counting begins with 0):
-      lcd.setCursor(0, 1);
-      int value = analogRead(potentiometer);
-      // Serial.println(value);                      // pirnt the value on the serial monitor screen
-      lcd.print(value);
-      color=1.0*value/1024.0*256;
-      lcd.setRGB(color, color, color);
-      delay(100);
+    lcd.clear();
+    if(digitalRead(pinTouch)) {
+      game.clickButton();
+      delay(1000);
     }
+    int value = analogRead(potentiometer);
+    game.updatePotentiometer(value);
+    lcd.print(game.getState());
+    struct Color gcolor = game.getColor();
+    lcd.setRGB(gcolor.r, gcolor.g, gcolor.b);
+    delay(500);
 }
 
 /*********************************************************************************************************
