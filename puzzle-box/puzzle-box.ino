@@ -44,6 +44,10 @@ int lightThreshold = 750;              // the threshold to turn on or off the LE
 
 // Temperature Sensor
 const int pinTemp = A3;
+int tempThreshold = 25;
+float temperature;
+int B = 3975;                         //  B Value of the Thermistor
+float resistance;
 
 void setup() 
 {
@@ -81,6 +85,16 @@ void loop()
     struct Color gcolor = game.getColor();
     lcd.setRGB(gcolor.r, gcolor.g, gcolor.b);
     delay(500);
+
+    //Temperature Sensor
+    int tempSensor = analogRead(pinTemp);
+    resistance=(float)(1023-tempSensor)*10000/tempSensor;                      // get resistance
+    temperature=1/(log(resistance/10000)/B+1/298.15)-273.15;     // calc temperature
+    if(temperature>tempThreshold)
+    {
+      
+    }
+    
 }
 
 /*********************************************************************************************************
