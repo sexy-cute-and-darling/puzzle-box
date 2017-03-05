@@ -30,21 +30,43 @@ rgb_lcd lcd;
 hp_game game;
 
 const int pinTouch = 3;               // pin of Touch Sensor
-const int potentiometer = A1;
+const int pinButton = 2;
+const int potentiometer = A0;
+const int pinLed = 13;
+
+//Sound Sensor
+const int pinSound = A1;               // pin of Sound Sensor
+int soundThreshold = 800;              // the threshold to turn on or off the LED
+
+//Light Sensor
+const int pinLight = A2;              // pin of Light Sensor
+int lightThreshold = 750;              // the threshold to turn on or off the LED
+
+// Temperature Sensor
+const int pinTemp = A3;
 
 void setup() 
 {
     Serial.begin(9600);                         // set the serial communication frequency at 9600 bits per sec
     pinMode(potentiometer, INPUT);
+    pinMode(pinSound, INPUT);
+    pinMode(pinLight, INPUT);
+    pinMode(pinButton, INPUT);
     pinMode(pinTouch, INPUT);
+    pinMode(pinTemp, INPUT);
     
     // set up the LCD's number of columns and rows:
     lcd.begin(16, 2);
     game.begin();
-    // lcd.setRGB(colorR, colorG, colorB);
 
     delay(1000);
 }
+
+/*
+if(lightSensor>lightThreshold)
+if(digitalRead(pinTouch))
+if(soundSensor>soundThreshold)
+*/
 
 void loop()
 {
