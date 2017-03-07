@@ -23,7 +23,7 @@
 
     hitSound
     hitLight
-    hitDoublePress
+    hitTouch
     hitTemperature
 
 */
@@ -67,7 +67,13 @@ public:
     // Hits
     void hitSound() { _challenges = _challenges | 0x000010; }
     void hitLight() { _challenges = _challenges | 0x000020; }
-    void hitDoublePress() { _challenges = _challenges | 0x000040; }
+    void hitTouch() {
+        if (_taps >= 7) {
+            _challenges = _challenges | 0x000040;
+        } else {
+            _taps++;
+        }
+    }
     void hitTemperature() { _challenges = _challenges | 0x000080; }
 
 private:
@@ -77,6 +83,8 @@ private:
     uint8_t _colorType;
 
     uint32_t _challenges;
+
+    uint8_t _taps;
 
     struct Color _GRYFFINDOR;
     struct Color _HUFFLEPUFF;

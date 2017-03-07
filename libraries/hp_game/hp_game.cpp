@@ -12,6 +12,8 @@ void hp_game::begin()
     _color = (struct Color) { 0, 0, 0 };
     _colorType = 0;
 
+    _taps = 0;
+
     _GRYFFINDOR = (Color) { 0x99, 0x33, 0x33 };
     _HUFFLEPUFF = (Color) { 0x99, 0x99, 0x33 };
     _RAVENCLAW  = (Color) { 0x33, 0x33, 0x99 };
@@ -32,7 +34,7 @@ void hp_game::updatePotentiometer(uint32_t value)
     } else if (value <= spaces*3) {                 // Orange
         _color = (struct Color) {0x99, 0x33, 0x00};
     } else if (value <= spaces*4) {                 // Yellow
-        _color = (struct Color) {0x99, 0x99, 0x00};
+        _color = (struct Color) {0x9A, 0x9A, 0x00};
     } else if (value <= spaces*5) {                 // Green
         _color = (struct Color) {0x00, 0xff, 0x00};
     } else if (value <= spaces*6) {                 // Blue
@@ -51,13 +53,13 @@ void hp_game::updatePotentiometer(uint32_t value)
  */
 void hp_game::matchesHouse()
 {
-    if (_color.r >= _HUFFLEPUFF.r && _color.g >= _HUFFLEPUFF.g && _color.b <= _HUFFLEPUFF.b) {
+    if (_color.r > _HUFFLEPUFF.r && _color.g > _HUFFLEPUFF.g && _color.b < _HUFFLEPUFF.b) {
         _challenges = _challenges | 0x000002;
-    } else if (_color.r >= _GRYFFINDOR.r && _color.g <= _GRYFFINDOR.g && _color.b <= _GRYFFINDOR.b) {
+    } else if (_color.r > _GRYFFINDOR.r && _color.g < _GRYFFINDOR.g && _color.b < _GRYFFINDOR.b) {
         _challenges = _challenges | 0x000001;
-    } else if (_color.r <= _RAVENCLAW.r && _color.g <= _RAVENCLAW.g && _color.b >= _RAVENCLAW.b) {
+    } else if (_color.r < _RAVENCLAW.r && _color.g < _RAVENCLAW.g && _color.b > _RAVENCLAW.b) {
         _challenges = _challenges | 0x000004;
-    } else if (_color.r <= _SLYTHERIN.r && _color.g >= _SLYTHERIN.g && _color.b <= _SLYTHERIN.b) {
+    } else if (_color.r < _SLYTHERIN.r && _color.g > _SLYTHERIN.g && _color.b < _SLYTHERIN.b) {
         _challenges = _challenges | 0x000008;
     }
 

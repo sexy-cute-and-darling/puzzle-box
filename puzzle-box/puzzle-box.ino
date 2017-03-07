@@ -35,14 +35,15 @@ const int pinTouch = 3;               // pin of Touch Sensor
 const int pinButton = 2;
 const int potentiometer = A0;
 const int pinLed = 13;
+int unlock = 0;                       // 2 = unlock
 
 //Sound Sensor
 const int pinSound = A1;               // pin of Sound Sensor
-int soundThreshold = 800;              // the threshold to turn on or off the LED
+int soundThreshold = 900;              // the threshold to turn on or off the LED
 
 //Light Sensor
 const int pinLight = A2;              // pin of Light Sensor
-int lightThreshold = 750;              // the threshold to turn on or off the LED
+int lightThreshold = 760;              // the threshold to turn on or off the LED
 
 // Temperature Sensor
 const int pinTemp = A3;
@@ -81,54 +82,70 @@ if(soundSensor>soundThreshold)
 
 void loop()
 {
-    lcd.clear();
-    
-    // Button
-    if (digitalRead(pinButton)) {
-      game.clickButton();
+    if (!game.isWinner()) {
+      lcd.clear();
+      
+      // Button
+      if (digitalRead(pinButton)) {
+        game.clickButton();
+      }
+
+      // Temperature
+      int tempSensor = analogRead(pinTemp);
+      resistance=(float)(1023-tempSensor)*10000/tempSensor;    // get resistance
+      temperature=1/(log(resistance/10000)/B+1/298.15)-273.15; 
+      if (temperature>tempThreshold) {
+        game.hitTemperature();
+      }
+
+      //Sound
+      if (analogRead(pinSound) > soundThreshold) {
+        game.hitSound();
+      }
+
+      // Light
+      if (analogRead(pinLight) > lightThreshold) {
+        game.hitLight();
+      }
+
+      // Touch Tap
+      if (digitalRead(pinTouch)) {
+        game.hitTouch();
+        delay(100);
+      }
+
+      // Potentiometer
+      game.updatePotentiometer(analogRead(potentiometer));
+      struct Color gcolor = game.getColor();
+      lcd.setRGB(gcolor.r, gcolor.g, gcolor.b);
+
+      // Victory?
+      if (game.isWinner()) {
+        unlock = -1;
+        lcd.print("Victory!");
+        lcd.setCursor(0, 1);
+        lcd.print(game.getState());
+        servoMain.write(90);
+        delay(500);
+      } else {
+        lcd.print("Try Harder!");
+        lcd.setCursor(0, 1);
+        lcd.print(game.getState());
+        delay(500);
+      }
     }
 
-    // Temperature
-    int tempSensor = analogRead(pinTemp);
-    resistance=(float)(1023-tempSensor)*10000/tempSensor;    // get resistance
-    temperature=1/(log(resistance/10000)/B+1/298.15)-273.15; 
-    if (temperature>tempThreshold) {
-      game.hitTemperature();
-    }
-
-    //Sound
-    if (analogRead(pinSound) > soundThreshold) {
-      game.hitSound();
-    }
-
-    // Light
-    if (analogRead(pinLight) > lightThreshold) {
-      game.hitLight();
-    }
-
-    // Touch & Button
+    // Reset
     if (digitalRead(pinTouch) && digitalRead(pinButton)) {
-      game.hitDoublePress();
-    }
-
-    // Potentiometer
-    game.updatePotentiometer(analogRead(potentiometer));
-    struct Color gcolor = game.getColor();
-    lcd.setRGB(gcolor.r, gcolor.g, gcolor.b);
-
-    // Victory?
-    if (game.isWinner()) {
-      lcd.print("Victory!");
-      lcd.setCursor(0, 1);
-      lcd.print(game.getState());
-      delay(9000);
-      servoMain.write(180);
+      unlock++;
+      if (unlock >= 2) {
+        servoMain.write(90); // unlock
+        unlock = 0;
+      } else {
+        game.begin();
+        servoMain.write(0);
+      }
       delay(1000);
-    } else {
-      lcd.print("Try Harder!");
-      lcd.setCursor(0, 1);
-      lcd.print(game.getState());
-      delay(500);
     }
 }
 
